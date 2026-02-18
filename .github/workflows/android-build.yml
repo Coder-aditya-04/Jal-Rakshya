@@ -14,13 +14,13 @@ jobs:
       - name: Checkout Source
         uses: actions/checkout@v3
 
+      # CHANGED: Java 17 -> Java 21
       - name: Setup Java
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21'
 
-      # CHANGED: Node 18 -> Node 22
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
