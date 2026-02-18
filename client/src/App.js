@@ -15,7 +15,7 @@ import { FiChevronUp } from 'react-icons/fi';
 const pageVariants = {
   initial: { opacity: 0, y: 18 },
   animate: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
-  exit:    { opacity: 0, y: -12, transition: { duration: 0.2, ease: 'easeIn' } },
+  exit: { opacity: 0, y: -12, transition: { duration: 0.2, ease: 'easeIn' } },
 };
 
 function PageShell({ children }) {
@@ -100,7 +100,7 @@ function App() {
         <Router>
           <div className="min-h-screen transition-colors duration-300">
             <Navbar />
-            <main className="pt-16">
+            <main className="pt-16 sm:pt-20 overflow-x-hidden w-full">
               <AnimatedRoutes />
             </main>
             <ScrollToTopButton />

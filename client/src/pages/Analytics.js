@@ -329,7 +329,7 @@ export default function Analytics() {
           <div className="chart-container">
             <h3 className="section-title flex items-center gap-2">Usage by Category & Year</h3>
             <p className="text-[11px] text-gray-400 -mt-3 mb-3">Filtered by selected usage types</p>
-            <div className="h-[300px]">
+            <div className="h-[250px] sm:h-[300px] w-full max-w-full">
               <Bar data={usageBarData} options={{
                 ...baseOpts,
                 scales: {
@@ -348,7 +348,7 @@ export default function Analytics() {
           <div className="chart-container">
             <h3 className="section-title flex items-center gap-2">Rainfall with Alert Markers</h3>
             <p className="text-[11px] text-gray-400 -mt-3 mb-3">Red bars = below 80% of average (drought risk)</p>
-            <div className="h-[300px]">
+            <div className="h-[250px] sm:h-[300px] w-full max-w-full">
               <Bar data={rainfallBarData} options={{
                 ...baseOpts,
                 scales: {
