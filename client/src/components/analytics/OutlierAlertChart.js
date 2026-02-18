@@ -67,6 +67,7 @@ export default function OutlierAlertChart({ data = [], field = 'groundwaterLevel
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: 10 },
     interaction: { intersect: false, mode: 'index' },
     plugins: {
       legend: { labels: { color: colors.textColor, usePointStyle: true, padding: 14, font: { size: 11 } } },
@@ -98,7 +99,7 @@ export default function OutlierAlertChart({ data = [], field = 'groundwaterLevel
   };
 
   return (
-    <div className="chart-container w-full max-w-full overflow-hidden">
+    <div className="chart-container w-full max-w-full">
       <div className="flex items-center justify-between mb-1">
         <h3 className="section-title flex items-center gap-2">Outlier Detection — {label}</h3>
         {outlierIndices.length > 0 && (

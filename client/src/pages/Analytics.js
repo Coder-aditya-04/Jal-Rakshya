@@ -151,7 +151,7 @@ export default function Analytics() {
   const baseOpts = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    layout: { padding: isMobile ? 0 : 10 },
+    layout: { padding: isMobile ? 10 : 20 },
     interaction: { intersect: false, mode: 'index' },
     plugins: {
       legend: {

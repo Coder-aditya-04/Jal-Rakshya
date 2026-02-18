@@ -13,17 +13,17 @@ import html2canvas from 'html2canvas';
 
 // ── Brand Colours ────────────────────────────────────────────────
 const BRAND = {
-  primary:    [59, 130, 246],   // #3B82F6  indigo-500
-  primaryDk:  [30,  64, 175],   // #1E40AF  indigo-800
-  dark:       [15,  23,  42],   // #0F172A  slate-900
-  slate700:   [51,  65,  85],   // #334155  slate-700
-  slate500:   [100, 116, 139],  // #64748B  slate-500
-  slate300:   [203, 213, 225],  // #CBD5E1  slate-300
-  slate100:   [241, 245, 249],  // #F1F5F9  slate-100
-  white:      [255, 255, 255],
-  green:      [34,  197, 94],   // #22C55E
-  amber:      [245, 158, 11],   // #F59E0B
-  red:        [239, 68,  68],   // #EF4444
+  primary: [59, 130, 246],   // #3B82F6  indigo-500
+  primaryDk: [30, 64, 175],   // #1E40AF  indigo-800
+  dark: [15, 23, 42],   // #0F172A  slate-900
+  slate700: [51, 65, 85],   // #334155  slate-700
+  slate500: [100, 116, 139],  // #64748B  slate-500
+  slate300: [203, 213, 225],  // #CBD5E1  slate-300
+  slate100: [241, 245, 249],  // #F1F5F9  slate-100
+  white: [255, 255, 255],
+  green: [34, 197, 94],   // #22C55E
+  amber: [245, 158, 11],   // #F59E0B
+  red: [239, 68, 68],   // #EF4444
 };
 
 // ── Layout constants (A4 portrait in mm) ─────────────────────────
@@ -253,14 +253,14 @@ function drawDataTable(pdf, data, startY, title = 'Historical Data Overview') {
 
   // Table header
   const cols = [
-    { label: 'Year',       width: 18, align: 'left' },
-    { label: 'Water Lvl',  width: 24, align: 'right' },
-    { label: 'Rainfall',   width: 24, align: 'right' },
-    { label: 'Depletion',  width: 24, align: 'right' },
-    { label: 'Agri Use',   width: 24, align: 'right' },
-    { label: 'Ind. Use',   width: 24, align: 'right' },
-    { label: 'House Use',  width: 24, align: 'right' },
-    { label: 'Score',      width: 16, align: 'right' },
+    { label: 'Year', width: 18, align: 'left' },
+    { label: 'Water Lvl', width: 24, align: 'right' },
+    { label: 'Rainfall', width: 24, align: 'right' },
+    { label: 'Depletion', width: 24, align: 'right' },
+    { label: 'Agri Use', width: 24, align: 'right' },
+    { label: 'Ind. Use', width: 24, align: 'right' },
+    { label: 'House Use', width: 24, align: 'right' },
+    { label: 'Score', width: 16, align: 'right' },
   ];
   const totalTableW = cols.reduce((s, c) => s + c.width, 0);
   const tableX = MARGIN;
@@ -359,11 +359,11 @@ function drawPredictionTable(pdf, predictions, latestData, startY) {
   }
 
   const cols = [
-    { label: 'Year',           width: 22, align: 'left' },
-    { label: 'Water Level (m)',width: 34, align: 'right' },
+    { label: 'Year', width: 22, align: 'left' },
+    { label: 'Water Level (m)', width: 34, align: 'right' },
     { label: 'Rainfall (mm)', width: 34, align: 'right' },
     { label: 'Depletion (%)', width: 34, align: 'right' },
-    { label: 'Trend',         width: 30, align: 'right' },
+    { label: 'Trend', width: 30, align: 'right' },
   ];
   const totalW = cols.reduce((s, c) => s + c.width, 0);
   const rowH = 8;
@@ -437,7 +437,7 @@ function drawPredictionTable(pdf, predictions, latestData, startY) {
 // ── Capture a DOM node as a high-res image ───────────────────────
 async function captureElement(el, darkMode) {
   const canvas = await html2canvas(el, {
-    scale: 3,
+    scale: 2, // Reduced from 3 to prevent mobile crashes
     useCORS: true,
     backgroundColor: darkMode ? '#0f172a' : '#ffffff',
     logging: false,
