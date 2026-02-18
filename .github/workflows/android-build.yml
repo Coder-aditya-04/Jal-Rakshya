@@ -20,12 +20,12 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      # CHANGED: Node 18 -> Node 22
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'
+          node-version: '22'
 
-      # CHANGED: npm ci -> npm install
       - name: Install Dependencies
         working-directory: ./client
         run: npm install
