@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Jal-Rakshya</string>
+    <string name="title_activity_main">Jal-Rakshya</string>
+    <string name="package_name">com.jalrakshya.app</string>
+    <string name="custom_url_scheme">com.jalrakshya.app</string>
+</resources>

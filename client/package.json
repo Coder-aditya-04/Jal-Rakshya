@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/cli": "^8.1.0",
+    "@capacitor/core": "^8.1.0",
     "@react-google-maps/api": "^2.19.2",
     "axios": "^1.6.2",
     "chart.js": "^4.4.1",
