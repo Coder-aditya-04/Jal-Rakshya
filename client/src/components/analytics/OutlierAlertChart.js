@@ -98,7 +98,7 @@ export default function OutlierAlertChart({ data = [], field = 'groundwaterLevel
   };
 
   return (
-    <div className="chart-container">
+    <div className="chart-container w-full max-w-full overflow-hidden">
       <div className="flex items-center justify-between mb-1">
         <h3 className="section-title flex items-center gap-2">Outlier Detection — {label}</h3>
         {outlierIndices.length > 0 && (
@@ -112,7 +112,7 @@ export default function OutlierAlertChart({ data = [], field = 'groundwaterLevel
           ? `Red markers indicate statistically abnormal data points (IQR method)`
           : 'No anomalies detected — data is within expected range'}
       </p>
-      <div className="h-[300px]">
+      <div className="h-[300px] sm:h-[320px] w-full">
         <Line data={chartData} options={options} />
       </div>
 
