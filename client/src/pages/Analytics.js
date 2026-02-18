@@ -146,26 +146,40 @@ export default function Analytics() {
   };
 
   // ─── CHART OPTIONS BASE ────────────────────────────────────────
+  const isMobile = window.innerWidth < 640;
+
   const baseOpts = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
+    layout: { padding: isMobile ? 0 : 10 },
     interaction: { intersect: false, mode: 'index' },
     plugins: {
-      legend: { labels: { color: colors.textColor, usePointStyle: true, padding: 14, font: { size: 11 } } },
+      legend: {
+        position: isMobile ? 'bottom' : 'top',
+        labels: { color: colors.textColor, usePointStyle: true, padding: isMobile ? 10 : 14, font: { size: isMobile ? 10 : 11 } }
+      },
       tooltip: {
         backgroundColor: darkMode ? '#1e293b' : '#fff',
         titleColor: darkMode ? '#e2e8f0' : '#1e293b',
         bodyColor: darkMode ? '#cbd5e1' : '#475569',
         borderColor: darkMode ? '#334155' : '#e2e8f0',
-        borderWidth: 1, cornerRadius: 10, padding: 12,
+        borderWidth: 1, cornerRadius: 10, padding: 10,
+        titleFont: { size: 12 },
+        bodyFont: { size: 11 }
       },
     },
     scales: {
-      x: { ticks: { color: colors.textColor }, grid: { color: colors.gridColor } },
-      y: { ticks: { color: colors.textColor }, grid: { color: colors.gridColor } },
+      x: {
+        ticks: { color: colors.textColor, font: { size: 10 }, maxRotation: 45, minRotation: 0 },
+        grid: { color: colors.gridColor, drawBorder: false }
+      },
+      y: {
+        ticks: { color: colors.textColor, font: { size: 10 }, padding: 5 },
+        grid: { color: colors.gridColor, borderDash: [4, 4], drawBorder: false }
+      },
     },
     animation: { duration: 700, easing: 'easeOutQuart' },
-  }), [colors, darkMode]);
+  }), [colors, darkMode, isMobile]);
 
   // ─── CHART DATA ────────────────────────────────────────────────
 
