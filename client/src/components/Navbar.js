@@ -36,7 +36,7 @@ export default function Navbar() {
               <h1 className="text-sm font-bold text-slate-900 dark:text-white leading-tight tracking-tight">
                 JalRakshya
               </h1>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 -mt-0.5 font-medium">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 -mt-0.5 font-medium hidden xs:block">
                 Groundwater Intelligence
               </p>
             </div>
