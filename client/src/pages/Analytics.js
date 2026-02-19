@@ -43,7 +43,7 @@ const DEFAULT_FILTERS = {
   yearMax: 2021,
   usageTypes: ['Agriculture', 'Industrial', 'Household'],
   rainfallMin: 0,
-  rainfallMax: 2000,
+  rainfallMax: 10000,
   selectedLocations: [],
 };
 
@@ -90,9 +90,17 @@ export default function Analytics() {
 
       if (wRes.data?.length) {
         const yrs = wRes.data.map((d) => d.year);
+        const rainfalls = wRes.data.map((d) => d.rainfall);
         const bounds = { min: Math.min(...yrs), max: Math.max(...yrs) };
+        const rainMax = Math.max(...rainfalls, 2000); // Ensure at least 2000
+
         setYearBounds(bounds);
-        setFilters((f) => ({ ...f, yearMin: bounds.min, yearMax: bounds.max }));
+        setFilters((f) => ({
+          ...f,
+          yearMin: bounds.min,
+          yearMax: bounds.max,
+          rainfallMax: Math.max(f.rainfallMax, rainMax), // Expand max if needed
+        }));
       }
     } catch (err) {
       setError(err.message);
