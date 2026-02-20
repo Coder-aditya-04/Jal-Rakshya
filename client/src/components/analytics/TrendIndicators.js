@@ -16,34 +16,32 @@ function TrendBadge({ label, current, previous, unit = '', invert = false, icon 
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.04 }}
-      className="glass-card-sm p-4 flex items-center gap-4 group cursor-default"
+      className="glass-card-sm p-3 sm:p-4 flex items-center gap-3 group cursor-default overflow-hidden"
     >
-      <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-lg ${
-        isNeutral
+      <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex-shrink-0 flex items-center justify-center text-lg ${isNeutral
           ? 'bg-gray-100 dark:bg-gray-800 text-gray-400'
           : isGood
-          ? 'bg-green-100 dark:bg-green-900/30 text-green-600'
-          : 'bg-red-100 dark:bg-red-900/30 text-red-500'
-      }`}>
+            ? 'bg-green-100 dark:bg-green-900/30 text-green-600'
+            : 'bg-red-100 dark:bg-red-900/30 text-red-500'
+        }`}>
         {icon || (isNeutral ? <FiMinus /> : isUp ? <FiTrendingUp /> : <FiTrendingDown />)}
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[11px] text-gray-400 uppercase tracking-wide font-medium truncate">{label}</p>
-        <div className="flex items-baseline gap-2 mt-0.5">
-          <span className="text-xl font-bold text-gray-800 dark:text-gray-100">
+      <div className="flex-1 min-w-0 overflow-hidden">
+        <p className="text-[10px] sm:text-[11px] text-gray-400 uppercase tracking-wide font-medium truncate">{label}</p>
+        <div className="flex items-baseline gap-1 mt-0.5">
+          <span className="text-base sm:text-xl font-bold text-gray-800 dark:text-gray-100 truncate">
             {typeof current === 'number' ? current.toFixed(1) : current}
           </span>
-          <span className="text-xs text-gray-400">{unit}</span>
+          <span className="text-[10px] sm:text-xs text-gray-400 flex-shrink-0">{unit}</span>
         </div>
       </div>
-      <div className={`text-right ${
-        isNeutral ? 'text-gray-400' : isGood ? 'text-green-600' : 'text-red-500'
-      }`}>
-        <div className="flex items-center gap-1 text-sm font-bold">
+      <div className={`text-right flex-shrink-0 ${isNeutral ? 'text-gray-400' : isGood ? 'text-green-600' : 'text-red-500'
+        }`}>
+        <div className="flex items-center gap-0.5 text-xs sm:text-sm font-bold">
           {isNeutral ? '—' : isUp ? '↑' : '↓'}
           {!isNeutral && <span>{Math.abs(change).toFixed(1)}%</span>}
         </div>
-        <p className="text-[10px] text-gray-400">vs prev year</p>
+        <p className="text-[9px] sm:text-[10px] text-gray-400 whitespace-nowrap">vs prev year</p>
       </div>
     </motion.div>
   );

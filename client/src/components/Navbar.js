@@ -17,10 +17,9 @@ export default function Navbar() {
   const isAnalytics = pathname.startsWith('/analytics/');
 
   const linkClass = (active) =>
-    `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 ${
-      active
-        ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300'
-        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
+    `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 ${active
+      ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300'
+      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100/60 dark:hover:bg-slate-800/40'
     }`;
 
   return (
@@ -32,11 +31,11 @@ export default function Navbar() {
             <div className="bg-primary-600 rounded-lg p-1.5 group-hover:bg-primary-700 transition-colors">
               <FiDroplet className="text-white text-base" />
             </div>
-            <div className="hidden sm:block">
+            <div>
               <h1 className="text-sm font-bold text-slate-900 dark:text-white leading-tight tracking-tight">
                 JalRakshya
               </h1>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 -mt-0.5 font-medium">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 -mt-0.5 font-medium hidden sm:block">
                 Groundwater Intelligence
               </p>
             </div>
@@ -79,9 +78,8 @@ export default function Navbar() {
               aria-pressed={darkMode}
             >
               <span
-                className={`absolute top-0.5 w-6 h-6 rounded-full bg-white dark:bg-slate-800 shadow-sm transform transition-transform duration-200 flex items-center justify-center ${
-                  darkMode ? 'translate-x-[30px]' : 'translate-x-0.5'
-                }`}
+                className={`absolute top-0.5 w-6 h-6 rounded-full bg-white dark:bg-slate-800 shadow-sm transform transition-transform duration-200 flex items-center justify-center ${darkMode ? 'translate-x-[30px]' : 'translate-x-0.5'
+                  }`}
               >
                 {darkMode ? (
                   <FiMoon className="text-indigo-400" size={11} />
@@ -127,9 +125,8 @@ export default function Navbar() {
               <Link
                 to="/"
                 onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  isActive('/') ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-                }`}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive('/') ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                  }`}
               >
                 <FiHome size={15} /> Home
               </Link>
@@ -137,17 +134,15 @@ export default function Navbar() {
                 <>
                   <button
                     onClick={() => { navigate(`/dashboard/${encodeURIComponent(selectedLocation)}`); setMobileOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      isDashboard ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-                    }`}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isDashboard ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      }`}
                   >
                     <FiBarChart2 size={15} /> Dashboard
                   </button>
                   <button
                     onClick={() => { navigate(`/analytics/${encodeURIComponent(selectedLocation)}`); setMobileOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                      isAnalytics ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-                    }`}
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isAnalytics ? 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                      }`}
                   >
                     <FiActivity size={15} /> Analytics
                   </button>
