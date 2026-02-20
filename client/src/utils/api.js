@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-const API_BASE = process.env.REACT_APP_API_URL ||
-  (process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5000/api');
+const API_BASE = process.env.REACT_APP_API_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE,
@@ -44,6 +43,10 @@ export const fetchPredictions = (location, years = 3) =>
 export const fetchAllOverview = () => api.get('/water/overview/all');
 
 export const fetchDistrictStats = () => api.get('/water/stats/district');
+
+export const fetchDistrictAlerts = () => api.get('/water/district-alerts');
+
+export const fetchDistrictGovUpdates = () => api.get('/water/district-gov-updates');
 
 export const compareLocations = (loc1, loc2) =>
   api.get('/water/compare', { params: { loc1, loc2 } });

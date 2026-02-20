@@ -145,10 +145,11 @@ export default function Dashboard() {
           className="mb-5 bg-gradient-to-r from-primary-50 to-teal-50 dark:from-primary-950/20 dark:to-teal-950/20 border border-primary-200/50 dark:border-primary-800/30 rounded-xl p-4"
         >
           <div className="flex items-start gap-3">
-            <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${summary.trend === 'improving' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' :
-                summary.trend === 'declining' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
-                  'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-              }`}>
+            <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
+              summary.trend === 'improving' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' :
+              summary.trend === 'declining' ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400' :
+              'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+            }`}>
               {summary.trend === 'improving' ? '↗' : summary.trend === 'declining' ? '↘' : '→'}
             </div>
             <div className="flex-1 min-w-0">
@@ -226,13 +227,13 @@ export default function Dashboard() {
       )}
 
       {/* Map + Status + Score */}
-      <div className="grid lg:grid-cols-3 gap-5 mb-8">
+      <div className="grid lg:grid-cols-3 gap-4 mb-5">
         {/* Map */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="lg:col-span-2 h-[350px] sm:h-[450px] rounded-2xl overflow-hidden border border-slate-200/60 dark:border-slate-700/30 shadow-sm relative z-0"
+          className="lg:col-span-2 h-[300px] sm:h-[400px] rounded-xl overflow-hidden border border-slate-200/60 dark:border-slate-700/30"
         >
           <MapComponent
             center={mapCenter}
@@ -240,14 +241,18 @@ export default function Dashboard() {
             singleMarker={
               latest
                 ? {
-                  location: locationName,
-                  groundwaterLevel: latest.groundwaterLevel,
-                  rainfall: latest.rainfall,
-                  status: latest.status,
-                  waterScore: latest.waterScore,
-                }
+                    location: locationName,
+                    groundwaterLevel: latest.groundwaterLevel,
+                    rainfall: latest.rainfall,
+                    depletionRate: latest.depletionRate,
+                    ph: latest.ph,
+                    status: latest.status,
+                    waterScore: latest.waterScore,
+                    scarcityLevel: latest.scarcityLevel,
+                  }
                 : null
             }
+            isDashboard
           />
         </motion.div>
 
@@ -265,12 +270,13 @@ export default function Dashboard() {
             <>
               <WaterScoreGauge score={latest.waterScore} size={140} />
               <span
-                className={`px-3 py-1 rounded-md text-xs font-bold ${latest.status === 'Safe'
+                className={`px-3 py-1 rounded-md text-xs font-bold ${
+                  latest.status === 'Safe'
                     ? 'status-safe'
                     : latest.status === 'Warning'
-                      ? 'status-warning'
-                      : 'status-critical'
-                  }`}
+                    ? 'status-warning'
+                    : 'status-critical'
+                }`}
               >
                 {latest.status} Zone
               </span>

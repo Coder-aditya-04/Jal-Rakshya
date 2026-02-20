@@ -79,18 +79,14 @@ export default function DrillDownChart({ data = [] }) {
   const chartData = drillLevel === 0 ? totalUsageData : drillLevel === 1 ? yearData : categoryDetailData;
   const title = drillLevel === 0 ? 'Total Water Usage by Year' :
     drillLevel === 1 ? `Usage Breakdown — ${selectedYear}` :
-      `${selectedCat} Usage Trend (All Years)`;
+    `${selectedCat} Usage Trend (All Years)`;
   const subtitle = drillLevel === 0 ? 'Click a bar to drill into category breakdown' :
     drillLevel === 1 ? 'Click a category to see detailed trend' :
-      'Deepest level — click Back to go up';
-
-  const numBars = drillLevel === 0 ? years.length : drillLevel === 1 ? 3 : years.length;
-  const minChartWidth = Math.max(340, numBars * 52);
+    'Deepest level — click Back to go up';
 
   const baseOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    layout: { padding: { left: 4, right: 16, top: 8, bottom: 4 } },
     onClick: (_, elements) => {
       if (!elements.length) return;
       const idx = elements[0].index;
@@ -117,11 +113,9 @@ export default function DrillDownChart({ data = [] }) {
       },
     },
     scales: {
-      x: { ticks: { color: colors.textColor, maxRotation: 0 }, grid: { color: colors.gridColor } },
-      y: {
-        ticks: { color: colors.textColor }, grid: { color: colors.gridColor },
-        title: { display: true, text: 'Megalitres (Ml)', color: colors.textColor }
-      },
+      x: { ticks: { color: colors.textColor }, grid: { color: colors.gridColor } },
+      y: { ticks: { color: colors.textColor }, grid: { color: colors.gridColor },
+        title: { display: true, text: 'Megalitres (Ml)', color: colors.textColor } },
     },
     animation: { duration: 600, easing: 'easeInOutQuart' },
   };
@@ -151,16 +145,18 @@ export default function DrillDownChart({ data = [] }) {
       {/* Breadcrumb */}
       <div className="flex items-center gap-1 text-[10px] mb-3">
         <span
-          className={`px-2 py-0.5 rounded-full cursor-pointer transition-colors ${drillLevel === 0 ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 font-bold' : 'text-gray-400 hover:text-primary-500'
-            }`}
+          className={`px-2 py-0.5 rounded-full cursor-pointer transition-colors ${
+            drillLevel === 0 ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 font-bold' : 'text-gray-400 hover:text-primary-500'
+          }`}
           onClick={() => { setDrillLevel(0); setSelectedYear(null); setSelectedCat(null); }}
         >Total</span>
         {drillLevel >= 1 && (
           <>
             <span className="text-gray-300">›</span>
             <span
-              className={`px-2 py-0.5 rounded-full cursor-pointer transition-colors ${drillLevel === 1 ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 font-bold' : 'text-gray-400 hover:text-primary-500'
-                }`}
+              className={`px-2 py-0.5 rounded-full cursor-pointer transition-colors ${
+                drillLevel === 1 ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 font-bold' : 'text-gray-400 hover:text-primary-500'
+              }`}
               onClick={() => { setDrillLevel(1); setSelectedCat(null); }}
             >{selectedYear}</span>
           </>
@@ -182,12 +178,9 @@ export default function DrillDownChart({ data = [] }) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -30 }}
           transition={{ duration: 0.3 }}
-          className="overflow-x-auto"
-          style={{ WebkitOverflowScrolling: 'touch' }}
+          className="h-[300px]"
         >
-          <div style={{ minWidth: `${minChartWidth}px`, height: '300px' }}>
-            {chartData && <Bar data={chartData} options={baseOptions} />}
-          </div>
+          {chartData && <Bar data={chartData} options={baseOptions} />}
         </motion.div>
       </AnimatePresence>
     </div>

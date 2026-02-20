@@ -102,7 +102,6 @@ export default function ForecastChart({ data = [], predictions = [], field = 'gr
   const options = {
     responsive: true,
     maintainAspectRatio: false,
-    layout: { padding: 10 },
     interaction: { intersect: false, mode: 'index' },
     plugins: {
       legend: { labels: { color: colors.textColor, usePointStyle: true, padding: 15, font: { size: 11 } } },
@@ -133,10 +132,10 @@ export default function ForecastChart({ data = [], predictions = [], field = 'gr
   };
 
   return (
-    <div className="chart-container w-full max-w-full">
+    <div className="chart-container">
       <h3 className="section-title flex items-center gap-2">{label} Forecast</h3>
       <p className="text-[11px] text-gray-400 -mt-3 mb-3">Solid = actual data | Dashed = linear regression forecast</p>
-      <div className="h-[250px] sm:h-[320px] w-full">
+      <div className="h-[320px]">
         <Line data={chartData} options={options} />
       </div>
     </div>

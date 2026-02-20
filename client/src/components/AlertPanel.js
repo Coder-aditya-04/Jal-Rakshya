@@ -25,7 +25,7 @@ export default function AlertPanel({ alerts = [] }) {
       <div className="glass-card p-5">
         <h3 className="section-title">Alerts</h3>
         <div className="flex items-center justify-center py-8 text-slate-400 dark:text-slate-500 text-sm">
-          <FiInfo className="mr-2" size={15} /> No active alerts for this location
+          <FiInfo className="mr-2" size={15} /> No active alerts at this time
         </div>
       </div>
     );

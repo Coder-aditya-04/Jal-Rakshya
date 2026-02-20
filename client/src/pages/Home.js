@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiSearch, FiMapPin, FiDroplet, FiTrendingUp, FiShield, FiArrowRight, FiDatabase, FiCpu, FiBarChart2 } from 'react-icons/fi';
 import { useLocation } from '../context/LocationContext';
-import { fetchLocations, fetchDistrictStats, fetchAllOverview, fetchAlerts, fetchGovUpdates, fetchSearchSuggestions } from '../utils/api';
+import { fetchLocations, fetchDistrictStats, fetchAllOverview, fetchAlerts, fetchGovUpdates, fetchSearchSuggestions, fetchDistrictAlerts, fetchDistrictGovUpdates } from '../utils/api';
 import MapComponent from '../components/MapComponent';
 import AlertPanel from '../components/AlertPanel';
 import GovUpdates from '../components/GovUpdates';
@@ -53,15 +53,19 @@ export default function Home() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [locRes, statRes, ovRes] = await Promise.all([
+        const [locRes, statRes, ovRes, dAlertRes, dGovRes] = await Promise.all([
           fetchLocations(),
           fetchDistrictStats(),
           fetchAllOverview(),
+          fetchDistrictAlerts(),
+          fetchDistrictGovUpdates(),
         ]);
         setLocations(locRes.data || []);
         setAllLocations(locRes.data || []);
         setStats(statRes.stats);
         setOverviewData(ovRes.data || []);
+        setAlerts(dAlertRes.alerts || []);
+        setGovUpdatesData(dGovRes.updates || []);
       } catch (err) {
         toast.error('Failed to load locations. Is the server running?');
       } finally {
@@ -86,7 +90,7 @@ export default function Home() {
           setGovUpdatesData(govRes.updates || []);
         }
       } catch {
-        if (!cancelled) { setAlerts([]); setGovUpdatesData([]); }
+        // Keep existing district-wide data on error
       }
     })();
     return () => { cancelled = true; };
@@ -101,6 +105,10 @@ export default function Home() {
       status: loc.status,
       waterScore: loc.waterScore,
       scarcityLevel: loc.scarcityLevel,
+      depletionRate: loc.depletionRate,
+      ph: loc.ph,
+      consumption: loc.consumption,
+      perCapitaUsage: loc.perCapitaUsage,
     }));
   }, [overviewData]);
 
@@ -129,14 +137,22 @@ export default function Home() {
     return () => { cancelled = true; };
   }, [debouncedSearch]);
 
+  const navTimerRef = useRef(null);
+
   const handleNavigateWithTransition = useCallback((name) => {
     selectLocation(name);
     setNavigatingTo(name);
     setNavigating(true);
-    setTimeout(() => {
+    if (navTimerRef.current) clearTimeout(navTimerRef.current);
+    navTimerRef.current = setTimeout(() => {
       navigate(`/dashboard/${encodeURIComponent(name)}`);
     }, 2000);
   }, [navigate, selectLocation]);
+
+  // Cleanup navigation timer on unmount
+  useEffect(() => {
+    return () => { if (navTimerRef.current) clearTimeout(navTimerRef.current); };
+  }, []);
 
   const handleSelect = (name) => {
     setSearch(name);
@@ -417,35 +433,44 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Alerts & Gov Updates */}
-      {exploredLocation && (
-        <section className="px-4 mb-6">
-          <div className="max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
-                  <FiMapPin className="inline mr-1 text-primary-500" size={13} />
-                  Insights for <span className="font-semibold text-slate-800 dark:text-slate-200">{exploredLocation}</span>
-                </p>
+      {/* Alerts & Gov Updates — Always visible (district-wide or location-specific) */}
+      <section className="px-4 mb-6">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                {exploredLocation ? (
+                  <>
+                    <FiMapPin className="inline mr-1 text-primary-500" size={13} />
+                    Insights for <span className="font-semibold text-slate-800 dark:text-slate-200">{exploredLocation}</span>
+                  </>
+                ) : (
+                  <>
+                    <FiShield className="inline mr-1 text-primary-500" size={13} />
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">Nashik District</span> — Alerts & Updates
+                  </>
+                )}
+              </p>
+              {exploredLocation && (
                 <button
                   onClick={() => navigate(`/dashboard/${encodeURIComponent(exploredLocation)}`)}
                   className="btn-secondary text-xs flex items-center gap-1"
                 >
                   Dashboard <FiArrowRight size={12} />
                 </button>
-              </div>
-              <div className="grid md:grid-cols-2 gap-4">
-                <AlertPanel alerts={alerts} />
-                <GovUpdates updates={govUpdates} />
-              </div>
-            </motion.div>
-          </div>
-        </section>
-      )}
+              )}
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <AlertPanel alerts={alerts} />
+              <GovUpdates updates={govUpdates} />
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
       {/* Map */}
       <section className="py-10 px-4">

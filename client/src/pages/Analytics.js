@@ -43,7 +43,7 @@ const DEFAULT_FILTERS = {
   yearMax: 2021,
   usageTypes: ['Agriculture', 'Industrial', 'Household'],
   rainfallMin: 0,
-  rainfallMax: 10000,
+  rainfallMax: 2000,
   selectedLocations: [],
 };
 
@@ -90,17 +90,9 @@ export default function Analytics() {
 
       if (wRes.data?.length) {
         const yrs = wRes.data.map((d) => d.year);
-        const rainfalls = wRes.data.map((d) => d.rainfall);
         const bounds = { min: Math.min(...yrs), max: Math.max(...yrs) };
-        const rainMax = Math.max(...rainfalls, 2000); // Ensure at least 2000
-
         setYearBounds(bounds);
-        setFilters((f) => ({
-          ...f,
-          yearMin: bounds.min,
-          yearMax: bounds.max,
-          rainfallMax: Math.max(f.rainfallMax, rainMax), // Expand max if needed
-        }));
+        setFilters((f) => ({ ...f, yearMin: bounds.min, yearMax: bounds.max }));
       }
     } catch (err) {
       setError(err.message);
@@ -154,40 +146,26 @@ export default function Analytics() {
   };
 
   // ─── CHART OPTIONS BASE ────────────────────────────────────────
-  const isMobile = window.innerWidth < 640;
-
   const baseOpts = useMemo(() => ({
     responsive: true,
     maintainAspectRatio: false,
-    layout: { padding: isMobile ? 10 : 20 },
     interaction: { intersect: false, mode: 'index' },
     plugins: {
-      legend: {
-        position: isMobile ? 'bottom' : 'top',
-        labels: { color: colors.textColor, usePointStyle: true, padding: isMobile ? 10 : 14, font: { size: isMobile ? 10 : 11 } }
-      },
+      legend: { labels: { color: colors.textColor, usePointStyle: true, padding: 14, font: { size: 11 } } },
       tooltip: {
         backgroundColor: darkMode ? '#1e293b' : '#fff',
         titleColor: darkMode ? '#e2e8f0' : '#1e293b',
         bodyColor: darkMode ? '#cbd5e1' : '#475569',
         borderColor: darkMode ? '#334155' : '#e2e8f0',
-        borderWidth: 1, cornerRadius: 10, padding: 10,
-        titleFont: { size: 12 },
-        bodyFont: { size: 11 }
+        borderWidth: 1, cornerRadius: 10, padding: 12,
       },
     },
     scales: {
-      x: {
-        ticks: { color: colors.textColor, font: { size: 10 }, maxRotation: 45, minRotation: 0 },
-        grid: { color: colors.gridColor, drawBorder: false }
-      },
-      y: {
-        ticks: { color: colors.textColor, font: { size: 10 }, padding: 5 },
-        grid: { color: colors.gridColor, borderDash: [4, 4], drawBorder: false }
-      },
+      x: { ticks: { color: colors.textColor }, grid: { color: colors.gridColor } },
+      y: { ticks: { color: colors.textColor }, grid: { color: colors.gridColor } },
     },
     animation: { duration: 700, easing: 'easeOutQuart' },
-  }), [colors, darkMode, isMobile]);
+  }), [colors, darkMode]);
 
   // ─── CHART DATA ────────────────────────────────────────────────
 
@@ -289,25 +267,8 @@ export default function Analytics() {
         </div>
         <div className="flex flex-wrap gap-2" data-no-pdf>
           <StoryMode data={filtered} predictions={predictions} locationName={locationName} />
-          <button
-            onClick={exportPDF}
-            disabled={exporting}
-            className="btn-secondary flex items-center gap-2 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {exporting ? (
-              <>
-                <svg className="animate-spin h-4 w-4 text-current" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                </svg>
-                Generating...
-              </>
-            ) : (
-              <>
-                <FiDownload size={14} />
-                Export PDF
-              </>
-            )}
+          <button onClick={exportPDF} disabled={exporting} className="btn-secondary flex items-center gap-1.5 text-sm">
+            <FiDownload size={13} /> {exporting ? 'Exporting...' : 'Export PDF'}
           </button>
         </div>
       </motion.div>
@@ -354,7 +315,7 @@ export default function Analytics() {
           <div className="chart-container">
             <h3 className="section-title flex items-center gap-2">Usage by Category & Year</h3>
             <p className="text-[11px] text-gray-400 -mt-3 mb-3">Filtered by selected usage types</p>
-            <div className="h-[300px] sm:h-[320px] w-full max-w-full">
+            <div className="h-[300px]">
               <Bar data={usageBarData} options={{
                 ...baseOpts,
                 scales: {
@@ -373,7 +334,7 @@ export default function Analytics() {
           <div className="chart-container">
             <h3 className="section-title flex items-center gap-2">Rainfall with Alert Markers</h3>
             <p className="text-[11px] text-gray-400 -mt-3 mb-3">Red bars = below 80% of average (drought risk)</p>
-            <div className="h-[300px] sm:h-[320px] w-full max-w-full">
+            <div className="h-[300px]">
               <Bar data={rainfallBarData} options={{
                 ...baseOpts,
                 scales: {
