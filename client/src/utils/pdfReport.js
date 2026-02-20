@@ -10,6 +10,9 @@
 
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { Capacitor } from '@capacitor/core';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 
 // ── Brand Colours ────────────────────────────────────────────────
 const BRAND = {
@@ -639,6 +642,39 @@ export async function generateReport({
     }
   }
 
-  // ── Save ──
-  pdf.save(`JalRakshya_${locationName}_Report.pdf`);
+  // ── Platform-aware Save ──
+  const fileName = `JalRakshya_${locationName}_Report.pdf`;
+
+  if (Capacitor.isNativePlatform()) {
+    // Android/iOS: Write to filesystem & share
+    try {
+      // Request permissions first (Android)
+      await Filesystem.requestPermissions();
+
+      // Get PDF as base64
+      const pdfBase64 = pdf.output('datauristring').split(',')[1];
+
+      // Write to Documents directory
+      const result = await Filesystem.writeFile({
+        path: fileName,
+        data: pdfBase64,
+        directory: Directory.Documents,
+      });
+
+      // Open Share dialog so user can save/view the PDF
+      await Share.share({
+        title: `JalRakshya Report – ${locationName}`,
+        text: 'Your groundwater analytics report is ready.',
+        url: result.uri,
+        dialogTitle: 'Save or share the report',
+      });
+    } catch (err) {
+      console.error('Capacitor PDF save error:', err);
+      // Fallback to data URI download
+      pdf.save(fileName);
+    }
+  } else {
+    // Web/browser: standard download
+    pdf.save(fileName);
+  }
 }

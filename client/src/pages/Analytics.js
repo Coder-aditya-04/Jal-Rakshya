@@ -289,8 +289,25 @@ export default function Analytics() {
         </div>
         <div className="flex flex-wrap gap-2" data-no-pdf>
           <StoryMode data={filtered} predictions={predictions} locationName={locationName} />
-          <button onClick={exportPDF} disabled={exporting} className="btn-secondary flex items-center gap-1.5 text-sm">
-            <FiDownload size={13} /> {exporting ? 'Exporting...' : 'Export PDF'}
+          <button
+            onClick={exportPDF}
+            disabled={exporting}
+            className="btn-secondary flex items-center gap-2 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {exporting ? (
+              <>
+                <svg className="animate-spin h-4 w-4 text-current" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Generating...
+              </>
+            ) : (
+              <>
+                <FiDownload size={14} />
+                Export PDF
+              </>
+            )}
           </button>
         </div>
       </motion.div>

@@ -6,6 +6,8 @@
     "@capacitor/android": "^8.1.0",
     "@capacitor/cli": "^8.1.0",
     "@capacitor/core": "^8.1.0",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/share": "^8.0.1",
     "@react-google-maps/api": "^2.19.2",
     "axios": "^1.6.2",
     "chart.js": "^4.4.1",

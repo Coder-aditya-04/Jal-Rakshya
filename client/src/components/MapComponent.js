@@ -173,10 +173,10 @@ export default function MapComponent({ center, markers = [], zoom = 12, singleMa
         ref={mapRef}
         whenReady={() => setMapReady(true)}
       >
-        <ZoomControl position="bottomright" />
+        <ZoomControl position="topright" />
 
-        {/* Layer switcher - collapsed by default on mobile */}
-        <LayersControl position="topright" collapsed={true}>
+        {/* Layer switcher */}
+        <LayersControl position="topright">
           <LayersControl.BaseLayer checked={defaultTile === 'street'} name="Street">
             <TileLayer url={TILE_LAYERS.street.url} attribution={TILE_LAYERS.street.attribution} />
           </LayersControl.BaseLayer>
