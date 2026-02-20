@@ -586,6 +586,51 @@ export async function generateReport({
   });
   y += 6;
 
+  // ───────── PAGE 4: Chart Images (native canvas capture — no html2canvas!) ─────────
+  if (reportRef?.current) {
+    // Grab all <canvas> elements inside chart containers — these are Chart.js rendered canvases
+    const allCanvases = reportRef.current.querySelectorAll('.chart-container canvas, [class*="chart"] canvas');
+
+    if (allCanvases.length > 0) {
+      pdf.addPage();
+      y = SAFE_TOP;
+      drawPageHeader(pdf, locationName);
+      y = drawSectionTitle(pdf, `${data.length >= 2 ? '5' : '3'}. Detailed Charts & Analysis`, y);
+
+      for (let i = 0; i < allCanvases.length; i++) {
+        try {
+          const canvas = allCanvases[i];
+          // Skip tiny or hidden canvases
+          if (canvas.width < 50 || canvas.height < 50) continue;
+
+          // Get image directly from the canvas — zero memory overhead!
+          const imgData = canvas.toDataURL('image/png', 0.92);
+
+          // Calculate proper aspect ratio
+          const aspectRatio = canvas.height / canvas.width;
+          const imgW = CONTENT_W;
+          const imgH = Math.min(imgW * aspectRatio, 85);
+
+          // Page break if needed
+          if (y + imgH + 10 > SAFE_BOTTOM) {
+            pdf.addPage();
+            y = SAFE_TOP;
+            drawPageHeader(pdf, locationName);
+          }
+
+          // Dark background card for chart
+          drawRect(pdf, MARGIN, y, CONTENT_W, imgH + 6, darkMode ? [15, 23, 42] : [248, 250, 252], 4);
+
+          // Add the chart image
+          pdf.addImage(imgData, 'PNG', MARGIN + 3, y + 3, imgW - 6, imgH);
+          y += imgH + 12;
+        } catch (err) {
+          console.warn('Canvas capture skipped:', err);
+        }
+      }
+    }
+  }
+
   // ───────── PREDICTION TABLE PAGE ─────────
   pdf.addPage();
   y = SAFE_TOP;
