@@ -506,80 +506,85 @@ export async function generateReport({
   y += 4;
   y = drawDataTable(pdf, data, y, '2. Historical Data Overview');
 
-  // ───────── PAGE 3+: Chart Captures ─────────
-  // Capture chart sections from the DOM
-  if (reportRef?.current) {
-    const chartContainers = reportRef.current.querySelectorAll('.chart-container');
-    const gridSections = reportRef.current.querySelectorAll('[class*="grid"]');
+  // ───────── PAGE 3: Summary Notes (No html2canvas — prevents crash) ─────────
+  pdf.addPage();
+  y = SAFE_TOP;
+  drawPageHeader(pdf, locationName);
+  y = drawSectionTitle(pdf, '3. Key Analytics Summary', y);
 
-    // Capture the main grid rows that contain charts
-    const captureTargets = [];
+  // Water Level trend
+  if (data.length >= 2) {
+    const first = data[0];
+    const last = data[data.length - 1];
+    const wlChange = last.groundwaterLevel - first.groundwaterLevel;
+    const rainChange = last.rainfall - first.rainfall;
+    const deplChange = last.depletionRate - first.depletionRate;
 
-    // Gather all chart-containers and major grid rows
-    if (chartContainers.length > 0) {
-      chartContainers.forEach((el) => captureTargets.push(el));
-    }
-
-    if (captureTargets.length > 0) {
-      pdf.addPage();
-      y = SAFE_TOP;
-      drawPageHeader(pdf, locationName);
-      y = drawSectionTitle(pdf, '3. Detailed Charts & Analysis', y);
-
-      for (let i = 0; i < captureTargets.length; i++) {
-        try {
-          const imgData = await captureElement(captureTargets[i], darkMode);
-
-          // Calculate proportional height
-          const el = captureTargets[i];
-          const elRect = el.getBoundingClientRect();
-          const aspectRatio = elRect.height / elRect.width;
-          const imgW = CONTENT_W;
-          const imgH = Math.min(imgW * aspectRatio, 90);
-
-          if (y + imgH + 6 > SAFE_BOTTOM) {
-            // Add page footer before new page
-            pdf.addPage();
-            y = SAFE_TOP;
-            drawPageHeader(pdf, locationName);
-          }
-
-          pdf.addImage(imgData, 'PNG', MARGIN, y, imgW, imgH);
-          y += imgH + 6;
-        } catch (err) {
-          console.warn('Chart capture failed:', err);
-        }
-      }
-    }
-
-    // Also capture Trend Indicators, Risk Gauge, Forecast if available
-    const specialSections = [
-      { selector: '[class*="TrendIndicators"], [data-section="trends"]', title: '' },
+    const summaryItems = [
+      { label: 'Water Level Trend', value: `${wlChange > 0 ? '↑ Rising' : '↓ Falling'} by ${Math.abs(wlChange).toFixed(2)} m (${first.year}–${last.year})`, color: wlChange > 0 ? BRAND.red : BRAND.green },
+      { label: 'Rainfall Trend', value: `${rainChange > 0 ? '↑ Increasing' : '↓ Decreasing'} by ${Math.abs(rainChange).toFixed(1)} mm`, color: rainChange > 0 ? BRAND.green : BRAND.amber },
+      { label: 'Depletion Rate', value: `${deplChange > 0 ? '↑ Worsening' : '↓ Improving'} by ${Math.abs(deplChange).toFixed(2)}%`, color: deplChange > 0 ? BRAND.red : BRAND.green },
+      { label: 'Water Quality Grade', value: `${grade.grade} — ${grade.label}`, color: BRAND.primary },
+      { label: 'Data Coverage', value: `${data.length} year(s) of monitoring data`, color: BRAND.slate500 },
     ];
 
-    // Capture the grid rows (risk gauge, forecast, etc.)
-    const topGridRows = reportRef.current.querySelectorAll(':scope > .grid');
-    if (topGridRows.length > 0) {
-      for (const row of topGridRows) {
-        try {
-          if (y + 90 > SAFE_BOTTOM) {
-            pdf.addPage();
-            y = SAFE_TOP;
-            drawPageHeader(pdf, locationName);
-          }
-          const imgData = await captureElement(row, darkMode);
-          const rect = row.getBoundingClientRect();
-          const aspectRatio = rect.height / rect.width;
-          const imgW = CONTENT_W;
-          const imgH = Math.min(imgW * aspectRatio, 90);
-          pdf.addImage(imgData, 'PNG', MARGIN, y, imgW, imgH);
-          y += imgH + 6;
-        } catch (err) {
-          console.warn('Grid row capture failed:', err);
-        }
-      }
-    }
+    const cardW = CONTENT_W;
+    const cardH = 22;
+    summaryItems.forEach((item, i) => {
+      const cy = y + i * (cardH + 3);
+      drawRect(pdf, MARGIN, cy, cardW, cardH, BRAND.slate100, 3);
+      drawRect(pdf, MARGIN, cy, 4, cardH, item.color, 2);
+      setFont(pdf, 'bold', 8.5);
+      pdf.setTextColor(...BRAND.slate700);
+      pdf.text(item.label, MARGIN + 10, cy + 9);
+      setFont(pdf, 'normal', 8.5);
+      pdf.setTextColor(...item.color);
+      pdf.text(item.value, MARGIN + 10, cy + 16);
+    });
+    y += summaryItems.length * (cardH + 3) + 8;
   }
+
+  // Usage breakdown section
+  y = drawSectionTitle(pdf, '4. Water Usage Breakdown', y);
+  const usageCols = [
+    { label: 'Year', width: 20, align: 'left' },
+    { label: 'Agri. (Ml)', width: 36, align: 'right' },
+    { label: 'Industry (Ml)', width: 40, align: 'right' },
+    { label: 'Household (Ml)', width: 44, align: 'right' },
+    { label: 'Total (Ml)', width: 36, align: 'right' },
+  ];
+  const usageTotal = usageCols.reduce((s, c) => s + c.width, 0);
+  const rowH2 = 7;
+  drawRect(pdf, MARGIN, y, usageTotal, rowH2 + 1, BRAND.dark, 2);
+  setFont(pdf, 'bold', 7);
+  pdf.setTextColor(...BRAND.white);
+  let ucx = MARGIN + 3;
+  usageCols.forEach((col) => {
+    if (col.align === 'right') pdf.text(col.label, ucx + col.width - 3, y + 5, { align: 'right' });
+    else pdf.text(col.label, ucx, y + 5);
+    ucx += col.width;
+  });
+  y += rowH2 + 1;
+
+  data.forEach((d, i) => {
+    if (y > SAFE_BOTTOM - 10) return;
+    if (i % 2 === 0) drawRect(pdf, MARGIN, y, usageTotal, rowH2, BRAND.slate100);
+    const total = ((d.agriculturalUsage || 0) + (d.industrialUsage || 0) + (d.householdUsage || 0)).toFixed(1);
+    const vals = [String(d.year), `${d.agriculturalUsage?.toFixed(1)}`, `${d.industrialUsage?.toFixed(1)}`, `${d.householdUsage?.toFixed(1)}`, total];
+    ucx = MARGIN + 3;
+    setFont(pdf, 'normal', 7.5);
+    pdf.setTextColor(...BRAND.slate700);
+    vals.forEach((val, vi) => {
+      const col = usageCols[vi];
+      if (vi === 0) { setFont(pdf, 'bold', 7.5); pdf.setTextColor(...BRAND.primary); }
+      else { setFont(pdf, 'normal', 7.5); pdf.setTextColor(...BRAND.slate700); }
+      if (col.align === 'right') pdf.text(val, ucx + col.width - 3, y + 5, { align: 'right' });
+      else pdf.text(val, ucx, y + 5);
+      ucx += col.width;
+    });
+    y += rowH2;
+  });
+  y += 6;
 
   // ───────── PREDICTION TABLE PAGE ─────────
   pdf.addPage();

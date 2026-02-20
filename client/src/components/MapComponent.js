@@ -145,12 +145,12 @@ const TILE_LAYERS = {
     name: 'Topographic',
     maxZoom: 17,
   },
-  // Free satellite from ESRI — use the cached version (works without auth at moderate zoom)
+  // NOTE: Google satellite tiles — work in Android WebView without API key
   satellite: {
-    url: 'https://tile.openstreetmap.bzh/osmfr/{z}/{x}/{y}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    url: 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps Satellite',
     name: 'Satellite View',
-    maxZoom: 19,
+    maxZoom: 20,
   },
   dark: {
     url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
