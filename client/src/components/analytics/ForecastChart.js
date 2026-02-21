@@ -135,7 +135,7 @@ export default function ForecastChart({ data = [], predictions = [], field = 'gr
     <div className="chart-container">
       <h3 className="section-title flex items-center gap-2">{label} Forecast</h3>
       <p className="text-[11px] text-gray-400 -mt-3 mb-3">Solid = actual data | Dashed = linear regression forecast</p>
-      <div className="h-[320px]">
+      <div className="h-[260px] sm:h-[320px]">
         <Line data={chartData} options={options} />
       </div>
     </div>

@@ -43,7 +43,7 @@ const DEFAULT_FILTERS = {
   yearMax: 2021,
   usageTypes: ['Agriculture', 'Industrial', 'Household'],
   rainfallMin: 0,
-  rainfallMax: 2000,
+  rainfallMax: 10000,
   selectedLocations: [],
 };
 
@@ -90,9 +90,16 @@ export default function Analytics() {
 
       if (wRes.data?.length) {
         const yrs = wRes.data.map((d) => d.year);
+        const rainfalls = wRes.data.map((d) => d.rainfall);
         const bounds = { min: Math.min(...yrs), max: Math.max(...yrs) };
+        const rainMax = Math.max(...rainfalls, 2000);
         setYearBounds(bounds);
-        setFilters((f) => ({ ...f, yearMin: bounds.min, yearMax: bounds.max }));
+        setFilters((f) => ({
+          ...f,
+          yearMin: bounds.min,
+          yearMax: bounds.max,
+          rainfallMax: Math.max(f.rainfallMax, rainMax),
+        }));
       }
     } catch (err) {
       setError(err.message);
@@ -267,8 +274,25 @@ export default function Analytics() {
         </div>
         <div className="flex flex-wrap gap-2" data-no-pdf>
           <StoryMode data={filtered} predictions={predictions} locationName={locationName} />
-          <button onClick={exportPDF} disabled={exporting} className="btn-secondary flex items-center gap-1.5 text-sm">
-            <FiDownload size={13} /> {exporting ? 'Exporting...' : 'Export PDF'}
+          <button
+            onClick={exportPDF}
+            disabled={exporting}
+            className="btn-secondary flex items-center gap-2 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {exporting ? (
+              <>
+                <svg className="animate-spin h-4 w-4 text-current" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Generating...
+              </>
+            ) : (
+              <>
+                <FiDownload size={14} />
+                Export PDF
+              </>
+            )}
           </button>
         </div>
       </motion.div>
@@ -315,7 +339,7 @@ export default function Analytics() {
           <div className="chart-container">
             <h3 className="section-title flex items-center gap-2">Usage by Category & Year</h3>
             <p className="text-[11px] text-gray-400 -mt-3 mb-3">Filtered by selected usage types</p>
-            <div className="h-[300px]">
+            <div className="h-[260px] sm:h-[300px]">
               <Bar data={usageBarData} options={{
                 ...baseOpts,
                 scales: {
@@ -334,7 +358,7 @@ export default function Analytics() {
           <div className="chart-container">
             <h3 className="section-title flex items-center gap-2">Rainfall with Alert Markers</h3>
             <p className="text-[11px] text-gray-400 -mt-3 mb-3">Red bars = below 80% of average (drought risk)</p>
-            <div className="h-[300px]">
+            <div className="h-[260px] sm:h-[300px]">
               <Bar data={rainfallBarData} options={{
                 ...baseOpts,
                 scales: {
