@@ -696,22 +696,25 @@ export async function generateReport({
   const fileName = `JalRakshya_${locationName}_Report.pdf`;
 
   if (Capacitor.isNativePlatform()) {
-    // Android/iOS: Write to filesystem & share
+    // Android/iOS: Multiple fallback strategies
     try {
-      // Request permissions first (Android)
-      await Filesystem.requestPermissions();
+      // Strategy 1: Write to Cache dir (always writable, no permissions needed)
+      const pdfArrayBuffer = pdf.output('arraybuffer');
+      const pdfBytes = new Uint8Array(pdfArrayBuffer);
+      let binaryStr = '';
+      for (let i = 0; i < pdfBytes.length; i++) {
+        binaryStr += String.fromCharCode(pdfBytes[i]);
+      }
+      const pdfBase64 = btoa(binaryStr);
 
-      // Get PDF as base64
-      const pdfBase64 = pdf.output('datauristring').split(',')[1];
-
-      // Write to Documents directory
       const result = await Filesystem.writeFile({
         path: fileName,
         data: pdfBase64,
-        directory: Directory.Documents,
+        directory: Directory.Cache,
+        recursive: true,
       });
 
-      // Open Share dialog so user can save/view the PDF
+      // Share the file so user can save/open it
       await Share.share({
         title: `JalRakshya Report – ${locationName}`,
         text: 'Your groundwater analytics report is ready.',
@@ -719,9 +722,43 @@ export async function generateReport({
         dialogTitle: 'Save or share the report',
       });
     } catch (err) {
-      console.error('Capacitor PDF save error:', err);
-      // Fallback to data URI download
-      pdf.save(fileName);
+      console.error('Capacitor save error:', err);
+      try {
+        // Strategy 2: Try Documents directory
+        const pdfArrayBuffer2 = pdf.output('arraybuffer');
+        const pdfBytes2 = new Uint8Array(pdfArrayBuffer2);
+        let binaryStr2 = '';
+        for (let i = 0; i < pdfBytes2.length; i++) {
+          binaryStr2 += String.fromCharCode(pdfBytes2[i]);
+        }
+        const pdfBase642 = btoa(binaryStr2);
+
+        await Filesystem.writeFile({
+          path: fileName,
+          data: pdfBase642,
+          directory: Directory.Documents,
+          recursive: true,
+        });
+        alert(`Report saved to Documents/${fileName}`);
+      } catch (err2) {
+        console.error('Documents save error:', err2);
+        // Strategy 3: Blob download (works in WebView)
+        try {
+          const blob = pdf.output('blob');
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (err3) {
+          console.error('Blob download error:', err3);
+          // Strategy 4: Last resort — jsPDF native save
+          pdf.save(fileName);
+        }
+      }
     }
   } else {
     // Web/browser: standard download
