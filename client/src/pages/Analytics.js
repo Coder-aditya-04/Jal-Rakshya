@@ -243,7 +243,7 @@ export default function Analytics() {
   }
 
   return (
-    <div className="max-w-[1400px] mx-auto px-3 sm:px-4 lg:px-6 pt-4 pb-6" ref={reportRef}>
+    <div className="max-w-[1400px] mx-auto px-3 sm:px-4 lg:px-6 pt-4 pb-6 overflow-x-hidden" ref={reportRef}>
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}

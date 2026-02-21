@@ -134,7 +134,7 @@ html.dark ::-webkit-scrollbar-thumb:hover { background: #334155; }
   }
   html.dark .section-title { color: #f1f5f9; }
 
-  .chart-container { @apply glass-card p-5 h-full; }
+  .chart-container { @apply glass-card p-5 h-full overflow-hidden; }
 }
 
 /* ═══════════════════════════════════════
